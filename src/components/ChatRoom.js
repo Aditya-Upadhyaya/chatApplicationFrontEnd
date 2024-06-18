@@ -13,7 +13,7 @@ function ChatRoom({  register, handleUsername , userData}) {
       <div className="text-center p-3">
         <h2>Chat room</h2>
       </div>
-      <img src='./images/lost-wireless-connection-97338.png'></img>
+      
       <div className="container p-5 my-auto border border-dark text-black shadow">
         
           <>

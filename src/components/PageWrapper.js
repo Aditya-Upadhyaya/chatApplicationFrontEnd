@@ -4,6 +4,7 @@ import ChatWindow from './ChatWindow';
 import { useState, useEffect } from "react";
 import SockJS from "sockjs-client";
 import { over } from "stompjs";
+import ConnectionLostPage from './ConnectionLostPage';
 
 
 var stompclient = null;
@@ -56,7 +57,7 @@ function PageWrapper({ page, handleButtonClick }) {
         // Create a new StompClient object with the WebSocket endpoint
         stompclient = over(sock);
         stompclient.connect({}, onConnected, onError);
-        handleButtonClick(1);
+        
 
     }
 
@@ -68,6 +69,7 @@ function PageWrapper({ page, handleButtonClick }) {
             onPrivateMessageReceived
         );
         userJoin();
+        handleButtonClick(1);
     }
 
     const userJoin = () => {
@@ -115,6 +117,7 @@ function PageWrapper({ page, handleButtonClick }) {
     }
 
     function onError() {
+        handleButtonClick(2);
         console.log("Error logged");
     }
 
@@ -156,6 +159,7 @@ function PageWrapper({ page, handleButtonClick }) {
     function handleTab(val) {
         setTab(val);
     }
+   
 
     switch (page) {
         case 0:
@@ -168,6 +172,12 @@ function PageWrapper({ page, handleButtonClick }) {
             return (
                 <>
                     <ChatWindow userlist={userlist} privateChats={privateChats} handleMessage={handleMessage} sendPublicMessage={sendPublicMessage} publicChats={publicChats} tab={tab} handleTab={handleTab} sendPrivateMesage={sendPrivateMesage}></ChatWindow>
+                </>
+            );
+        case 2:
+            return (
+                <>
+                <ConnectionLostPage handleButtonClick={handleButtonClick}></ConnectionLostPage>
                 </>
             );
 

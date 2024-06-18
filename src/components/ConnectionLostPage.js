@@ -1,10 +1,22 @@
-import React from 'react'
+import React from 'react';
+import ImageConnectionLost from '../images/lost-wireless-connection-97338.png';
+import Button from '@mui/material/Button';
 
-function ConnectionLostPage() {
+
+function ConnectionLostPage({handleButtonClick}) {
   return (
-    <div>
-      <img src='/images/lost-wireless-connection-97338.png'></img>
+    <>
+    <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'column'}}
+        > 
+    <img src={ImageConnectionLost}  alt="Connection Lost" width="500" height="600"></img>
+    <Button variant="outlined" onClick={() => { handleButtonClick(0) }}>Home</Button>
     </div>
+    
+    </>
   )
 }
 
