@@ -10,11 +10,13 @@ import ConnectionLostPage from './ConnectionLostPage';
 var stompclient = null;
 
 function PageWrapper({ page, handleButtonClick }) {
+    
 
     const [privateChats, setPrivateChats] = useState(new Map());
     const [publicChats, setPublicChats] = useState([]);
     const [userlist, setuserlist] = useState([]);
     const [tab, setTab] = useState("CHATROOM");
+    const [msg, setmsg] = useState("");
     const [userData, setUserData] = useState({
         username: "",
         receivername: "",
@@ -25,7 +27,9 @@ function PageWrapper({ page, handleButtonClick }) {
     }, [userData]);
     useEffect(() => {
     }, [tab]);
-
+   
+    useEffect(() => {
+    }, [msg]);
     useEffect(() => {
     }, [userlist]);
 
@@ -123,6 +127,9 @@ function PageWrapper({ page, handleButtonClick }) {
 
     const handleMessage = (event) => {
         const { value } = event.target;
+        
+        setmsg(value);
+        
         setUserData({ ...userData, "message": value });
     }
     const sendPublicMessage = () => {
@@ -135,6 +142,7 @@ function PageWrapper({ page, handleButtonClick }) {
             console.log("Msg that we send", chatMessage);
             stompclient.send("/app/message", {}, JSON.stringify(chatMessage));
             setUserData({ ...userData, "message": "" });
+            setmsg("");
         }
     }
 
@@ -153,6 +161,7 @@ function PageWrapper({ page, handleButtonClick }) {
             }
             stompclient.send("/app/privateMessage", {}, JSON.stringify(chatMessage));
             setUserData({ ...userData, "message": "" });
+            setmsg("");
         }
     }
 
@@ -171,7 +180,7 @@ function PageWrapper({ page, handleButtonClick }) {
         case 1:
             return (
                 <>
-                    <ChatWindow userlist={userlist} privateChats={privateChats} handleMessage={handleMessage} sendPublicMessage={sendPublicMessage} publicChats={publicChats} tab={tab} handleTab={handleTab} sendPrivateMesage={sendPrivateMesage}></ChatWindow>
+                    <ChatWindow userlist={userlist} privateChats={privateChats} handleMessage={handleMessage} sendPublicMessage={sendPublicMessage} publicChats={publicChats} tab={tab} handleTab={handleTab} sendPrivateMesage={sendPrivateMesage} msg={msg}></ChatWindow>
                 </>
             );
         case 2:

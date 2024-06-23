@@ -6,7 +6,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 
 
-function ChatWindow({ userlist, privateChats, handleMessage, sendPublicMessage, publicChats, tab, handleTab ,sendPrivateMesage}) {
+function ChatWindow({ userlist, privateChats, handleMessage, sendPublicMessage, publicChats, tab, handleTab ,sendPrivateMesage ,msg}) {
   useEffect(() => {
 
   }, [privateChats]);
@@ -75,7 +75,7 @@ function ChatWindow({ userlist, privateChats, handleMessage, sendPublicMessage, 
                 multiline
                 sx={{ width: '55vh', borderRadius: '50px' }}
                 onChange={handleMessage}
-                defaultValue={""}
+                value={msg}
 
               />
               <Button variant="contained" sx={{ margin: '3px', padding: '10px' }} onClick={sendPublicMessage}>
@@ -102,7 +102,7 @@ function ChatWindow({ userlist, privateChats, handleMessage, sendPublicMessage, 
                 multiline
                 sx={{ width: '55vh', borderRadius: '50px' }}
                 onChange={handleMessage}
-                defaultValue={""}
+                value={msg}
 
               />
               <Button variant="contained" sx={{ margin: '3px', padding: '10px' }} onClick={sendPrivateMesage}>
