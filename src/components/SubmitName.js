@@ -3,7 +3,7 @@ import "./style.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 
-function ChatRoom({  register, handleUsername , userData}) {
+function SubmitName({  register, handleUsername , userData}) {
 
 
 
@@ -47,4 +47,4 @@ function ChatRoom({  register, handleUsername , userData}) {
     </>
   );
 }
-export default ChatRoom;
+export default SubmitName;
