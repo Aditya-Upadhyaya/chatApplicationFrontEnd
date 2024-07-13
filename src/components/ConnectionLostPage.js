@@ -13,7 +13,7 @@ function ConnectionLostPage({handleButtonClick}) {
         flexDirection: 'column'}}
         > 
     <img src={ImageConnectionLost}  alt="Connection Lost" width="500" height="600"></img>
-    <Button variant="outlined" onClick={() => { handleButtonClick(0) }}>Home</Button>
+    <Button variant="outlined" onClick={() => { handleButtonClick(10) }}>Home</Button>
     </div>
     
     </>

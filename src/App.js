@@ -5,12 +5,11 @@ import PageWrapper from './components/PageWrapper';
 
 function App() {
 
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(10);
 
   const handleButtonClick = (num) => {
     // Update the state in response to the button click event
     setPage(num);
-    console.log("button Clicked",page);
   };
 
 

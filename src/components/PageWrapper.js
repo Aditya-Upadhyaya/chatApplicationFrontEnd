@@ -1,17 +1,21 @@
 import React from 'react'
-import ChatRoom from './ChatRoom';
+import SubmitName from './SubmitName';
 import ChatWindow from './ChatWindow';
 import { useState, useEffect } from "react";
 import SockJS from "sockjs-client";
 import { over } from "stompjs";
 import ConnectionLostPage from './ConnectionLostPage';
+import JoinOrCreateRoom from './JoinOrCreateRoom';
 
 
 var stompclient = null;
 
 function PageWrapper({ page, handleButtonClick }) {
-    
 
+    const [roomId, setroomId] = useState(new Map());
+    const [userRoom, setuserRoom] = useState();
+    const [createRoomFlag, setcreateRoomFlag] = useState(false);
+    const [joinRoomFlag, setjoinRoomFlag] = useState(false);
     const [privateChats, setPrivateChats] = useState(new Map());
     const [publicChats, setPublicChats] = useState([]);
     const [userlist, setuserlist] = useState([]);
@@ -27,11 +31,16 @@ function PageWrapper({ page, handleButtonClick }) {
     }, [userData]);
     useEffect(() => {
     }, [tab]);
-   
+
     useEffect(() => {
     }, [msg]);
     useEffect(() => {
     }, [userlist]);
+    useEffect(() => {
+    }, [roomId]);
+    useEffect(() => {
+    }, [createRoomFlag]);
+
 
 
 
@@ -47,27 +56,43 @@ function PageWrapper({ page, handleButtonClick }) {
         setuserlist([...userlist]);
     }
 
+    useEffect(() => {
+        if (createRoomFlag === true) {
+            console.log("*******In UseEffect *********", userRoom);
+            // Try to set up WebSocket connection with the handshake at "http://localhost:8085/ws"
+            let sock = new SockJS("http://localhost:8085/ws");
+            // Create a new StompClient object with the WebSocket endpoint
+            stompclient = over(sock);
+            stompclient.connect({}, onConnected, onError);
+        }
 
-    function register(params) {
+    }, [userRoom]);
 
 
-        registerUser();
+    function register() {
+        if (createRoomFlag === true) {
+            console.log("************** Create romm *************");
+            let roomNumber = Math.round(Math.random() * 10000);
+            roomId.set(userData.username, roomNumber);
+            setroomId(new Map(roomId));
+            setuserRoom(roomNumber);
+        }
+        if (joinRoomFlag === true) {
+            // Try to set up WebSocket connection with the handshake at "http://localhost:8085/ws"
+            let sock = new SockJS("http://localhost:8085/ws");
+            // Create a new StompClient object with the WebSocket endpoint
+            stompclient = over(sock);
+            stompclient.connect({}, onConnected, onError);
+        }
+        console.log("************** Create romm ke baad*************", userRoom);
+
     }
 
-    function registerUser() {
 
-        // Try to set up WebSocket connection with the handshake at "http://localhost:8085/ws"
-        let sock = new SockJS("http://localhost:8085/ws");
-        // Create a new StompClient object with the WebSocket endpoint
-        stompclient = over(sock);
-        stompclient.connect({}, onConnected, onError);
-        
-
-    }
 
     function onConnected() {
         setUserData({ ...userData, connected: true });
-        stompclient.subscribe("/chatroom/public", onPulicMessageReceived);
+        stompclient.subscribe(`/chatroom/public/${userRoom}`, onPulicMessageReceived);
         stompclient.subscribe(
             "/user/" + userData.username + "/private",
             onPrivateMessageReceived
@@ -81,7 +106,7 @@ function PageWrapper({ page, handleButtonClick }) {
             sendername: userData.username,
             status: "JOIN"
         };
-        stompclient.send("/app/message", {}, JSON.stringify(chatMessage));
+        stompclient.send(`/app/message/${userRoom}`, {}, JSON.stringify(chatMessage));
 
     }
     function onPrivateMessageReceived(payload) {
@@ -108,7 +133,7 @@ function PageWrapper({ page, handleButtonClick }) {
 
                 }
                 handleUserlist(payloadData.sendername)
-                console.log('payloadData received onPulicMessageReceived', payloadData);
+                // console.log('payloadData received onPulicMessageReceived', payloadData);
 
                 break;
             case "MESSAGE":
@@ -127,9 +152,9 @@ function PageWrapper({ page, handleButtonClick }) {
 
     const handleMessage = (event) => {
         const { value } = event.target;
-        
+
         setmsg(value);
-        
+
         setUserData({ ...userData, "message": value });
     }
     const sendPublicMessage = () => {
@@ -139,8 +164,7 @@ function PageWrapper({ page, handleButtonClick }) {
                 message: userData.message,
                 status: "MESSAGE"
             };
-            console.log("Msg that we send", chatMessage);
-            stompclient.send("/app/message", {}, JSON.stringify(chatMessage));
+            stompclient.send(`/app/message/${userRoom}`, {}, JSON.stringify(chatMessage));
             setUserData({ ...userData, "message": "" });
             setmsg("");
         }
@@ -168,25 +192,51 @@ function PageWrapper({ page, handleButtonClick }) {
     function handleTab(val) {
         setTab(val);
     }
-   
+
+    function createRoom() {
+        //Redirect user to Chat room (first page) where user need to submit name  
+        setcreateRoomFlag(true);
+        handleButtonClick(0);
+
+    }
+    function joinRoom(value) {
+        console.log("*********In Join Room ************", value);
+        setuserRoom(value);
+        handleButtonClick(0);
+        setjoinRoomFlag(true);
+
+    }
+
 
     switch (page) {
         case 0:
             return (
                 <div>
-                    <ChatRoom register={register} handleUsername={handleUsername} userData={userData} />
+                    <SubmitName register={register} handleUsername={handleUsername} userData={userData} />
                 </div>
             )
         case 1:
             return (
                 <>
-                    <ChatWindow userlist={userlist} privateChats={privateChats} handleMessage={handleMessage} sendPublicMessage={sendPublicMessage} publicChats={publicChats} tab={tab} handleTab={handleTab} sendPrivateMesage={sendPrivateMesage} msg={msg}></ChatWindow>
+                    <ChatWindow userlist={userlist}
+                        privateChats={privateChats}
+                        handleMessage={handleMessage}
+                        sendPublicMessage={sendPublicMessage}
+                        publicChats={publicChats} tab={tab}
+                        handleTab={handleTab} sendPrivateMesage={sendPrivateMesage} msg={msg}></ChatWindow>
                 </>
             );
         case 2:
             return (
                 <>
-                <ConnectionLostPage handleButtonClick={handleButtonClick}></ConnectionLostPage>
+                    <ConnectionLostPage handleButtonClick={handleButtonClick}></ConnectionLostPage>
+                </>
+            );
+        case 10:
+            return (
+                <>
+                    <JoinOrCreateRoom createRoom={createRoom} joinRoom={joinRoom}></JoinOrCreateRoom>
+
                 </>
             );
 
