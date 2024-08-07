@@ -5,16 +5,13 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 function SubmitName({  register, handleUsername , userData}) {
 
-
-
-
   return (
     <>
       <div className="text-center p-3">
         <h2>Chat room</h2>
       </div>
-      
-      <div className="container p-5 my-auto border border-dark text-black shadow">
+
+      <div id = 'submitName' className="container p-5 my-auto border border-dark text-black shadow">
         
           <>
             <div className="p-5">

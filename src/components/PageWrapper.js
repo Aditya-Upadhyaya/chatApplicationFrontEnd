@@ -8,6 +8,7 @@ import ConnectionLostPage from './ConnectionLostPage';
 import JoinOrCreateRoom from './JoinOrCreateRoom';
 
 
+
 var stompclient = null;
 
 function PageWrapper({ page, handleButtonClick }) {
@@ -64,6 +65,18 @@ function PageWrapper({ page, handleButtonClick }) {
             // Create a new StompClient object with the WebSocket endpoint
             stompclient = over(sock);
             stompclient.connect({}, onConnected, onError);
+
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    "roomNumber" :`${userRoom}`,
+                    "creatorName" :`${userData.username}`
+                })
+            };
+            fetch('http://localhost:8085/addRoom', requestOptions)
+            .then(response => response.json())
+            .then(data => console.log(data));
         }
 
     }, [userRoom]);
@@ -72,7 +85,7 @@ function PageWrapper({ page, handleButtonClick }) {
     function register() {
         if (createRoomFlag === true) {
             console.log("************** Create romm *************");
-            let roomNumber = Math.round(Math.random() * 10000);
+            let roomNumber = Math.floor(1000 + (Math.random() * 9000));
             roomId.set(userData.username, roomNumber);
             setroomId(new Map(roomId));
             setuserRoom(roomNumber);
@@ -204,7 +217,6 @@ function PageWrapper({ page, handleButtonClick }) {
         setuserRoom(value);
         handleButtonClick(0);
         setjoinRoomFlag(true);
-
     }
 
 
@@ -234,10 +246,9 @@ function PageWrapper({ page, handleButtonClick }) {
             );
         case 10:
             return (
-                <>
+                <div>
                     <JoinOrCreateRoom createRoom={createRoom} joinRoom={joinRoom}></JoinOrCreateRoom>
-
-                </>
+                </div>
             );
 
         default:

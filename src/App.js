@@ -13,10 +13,17 @@ function App() {
   };
 
 
-  return (<>
-    
-    <PageWrapper page={page} handleButtonClick={handleButtonClick}></PageWrapper>
-    </>
+  return (
+    <div id='pageWrapper' style={{
+      // display: 'flex',
+      // justifyContent: 'center',
+      // alignItems: 'center',
+      backgroundColor:'aliceblue',
+      height: '100vh',
+      width:'100vw'
+    }}>
+      <PageWrapper page={page} handleButtonClick={handleButtonClick}></PageWrapper>
+    </div>
   );
 }
 
