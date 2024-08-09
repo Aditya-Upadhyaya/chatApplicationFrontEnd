@@ -46,7 +46,8 @@ function JoinOrCreateRoom({ createRoom, joinRoom }) {
   return (
 
 
-    <Box>
+    <Box display={'flex'} justifyContent={'center'}>
+      <div style={{margin : '20rem'}}>
       <Button variant="contained" sx={{ margin: '3px', padding: '10px' }} onClick={createRoom}>
         Create a room
       </Button>
@@ -63,6 +64,7 @@ function JoinOrCreateRoom({ createRoom, joinRoom }) {
         Join
       </Button>
       {hasError && <h2>Error</h2>}
+      </div>
     </Box>
 
   )

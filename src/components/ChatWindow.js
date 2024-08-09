@@ -47,7 +47,7 @@ function ChatWindow({ userlist, privateChats, handleMessage, sendPublicMessage, 
           </Grid>
           {tab === "CHATROOM" ? <Grid item xs={8} spacing={2}>
             <Box
-              sx={{ overflowY: "scroll", p: 2, display: 'flex', border: '2px solid grey', minHeight: '68vh', maxHeight: '80vh' }}
+              sx={{ overflowY: "scroll", p: 2, display: 'flex', border: '2px solid grey', minHeight: '68vh', maxHeight: '80vh', minWidth: '20vw'  }}
             >
               <ul>
                 {publicChats.map(function (data, index) {
@@ -63,8 +63,7 @@ function ChatWindow({ userlist, privateChats, handleMessage, sendPublicMessage, 
               id="outlined-textarea"
               label="Message"
               placeholder="Type your message "
-              multiline
-              sx={{ minWidth: '15vw', borderRadius: '50px', width: '50vw' }}
+              sx={{minWidth: '10vw', borderRadius: '50px', width: '50vw'}}
               onChange={handleMessage}
               value={msg}
 
@@ -91,7 +90,6 @@ function ChatWindow({ userlist, privateChats, handleMessage, sendPublicMessage, 
               id="outlined-textarea"
               label="Message"
               placeholder="Type your message "
-              multiline
               sx={{ minWidth: '15vw', borderRadius: '50px', width: '50vw' }}
               onChange={handleMessage}
               value={msg}

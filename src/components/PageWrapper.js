@@ -76,7 +76,7 @@ function PageWrapper({ page, handleButtonClick }) {
             };
             fetch('http://localhost:8085/addRoom', requestOptions)
             .then(response => response.json())
-            .then(data => console.log(data));
+            
         }
 
     }, [userRoom]);
@@ -98,10 +98,7 @@ function PageWrapper({ page, handleButtonClick }) {
             stompclient.connect({}, onConnected, onError);
         }
         console.log("************** Create romm ke baad*************", userRoom);
-
     }
-
-
 
     function onConnected() {
         setUserData({ ...userData, connected: true });
@@ -111,7 +108,7 @@ function PageWrapper({ page, handleButtonClick }) {
             onPrivateMessageReceived
         );
         userJoin();
-        handleButtonClick(1);
+       
     }
 
     const userJoin = () => {
@@ -120,7 +117,7 @@ function PageWrapper({ page, handleButtonClick }) {
             status: "JOIN"
         };
         stompclient.send(`/app/message/${userRoom}`, {}, JSON.stringify(chatMessage));
-
+        handleButtonClick(1);
     }
     function onPrivateMessageReceived(payload) {
 
