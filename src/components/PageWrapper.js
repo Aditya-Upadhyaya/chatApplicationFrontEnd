@@ -43,7 +43,8 @@ function PageWrapper({ page, handleButtonClick }) {
     }, [roomId]);
 
 
-
+    console.log("private chat in PageWrapper : ", privateChats);
+    
     function updateChatName() {
         console.log("################# IN Update chat method #################", userlist);
         userlist.map((data , index) => ( privateChats.set(data, [])))

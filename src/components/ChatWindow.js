@@ -21,7 +21,7 @@ function ChatWindow({ userlist, privateChats, handleMessage, sendPublicMessage, 
     console.log("Tab : ", tab);
   }, [tab]);
   console.log("Userlist in chatWindow : ", userlist);
-  console.log("private chat in chatWindow : ", privateChats);
+  
   return (
     <>
       <Box

@@ -10,10 +10,17 @@ function JoinOrCreateRoom({ createRoom, joinRoom }) {
   const [enteredRoomNumber, setenteredRoomNumber] = useState("");
   const [data, setData] = useState([]);
   const [hasError, sethasError] = useState(null);
+  const [hasLengthError, sethasLengthError] = useState(null);
 
   function handleRoomNumber(event) {
     const { value } = event.target;
     setenteredRoomNumber(value);
+    if (value.length == 4) {
+      sethasLengthError(false);
+    }
+    else {
+      sethasLengthError(true);
+    }
   }
 
   useEffect(() => {
@@ -47,23 +54,23 @@ function JoinOrCreateRoom({ createRoom, joinRoom }) {
 
 
     <Box display={'flex'} justifyContent={'center'}>
-      <div style={{margin : '20rem'}}>
-      <Button variant="contained" sx={{ margin: '3px', padding: '10px' }} onClick={createRoom}>
-        Create a room
-      </Button>
-      <TextField
-        id="outlined-textarea"
-        label="code"
-        value={enteredRoomNumber}
-        placeholder="Enter code "
-        sx={{ maxWidth: '65vh', borderRadius: '50px' }}
-        onChange={handleRoomNumber}
-        onBlur={validateRoomList}
-      />
-      <Button variant="contained" sx={{ margin: '3px', padding: '10px' }} onClick={() => { validateRoom(enteredRoomNumber) }} disabled={hasError} >
-        Join
-      </Button>
-      {hasError && <h2>Error</h2>}
+      <div style={{ margin: '20rem' }}>
+        <Button variant="contained" sx={{ margin: '3px', padding: '10px' }} onClick={createRoom}>
+          Create a room
+        </Button>
+        <TextField
+          id="outlined-textarea"
+          label="code"
+          value={enteredRoomNumber}
+          placeholder="Enter code "
+          sx={{ maxWidth: '65vh', borderRadius: '50px' }}
+          onChange={handleRoomNumber}
+          onBlur={validateRoomList}
+        />
+        <Button variant="contained" sx={{ margin: '3px', padding: '10px' }} onClick={() => { validateRoom(enteredRoomNumber) }} disabled={hasError || hasLengthError} >
+          Join
+        </Button>
+        {hasError && <h2>Error</h2>}
       </div>
     </Box>
 

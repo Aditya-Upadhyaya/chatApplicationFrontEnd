@@ -26,7 +26,7 @@ function SubmitName({  register, handleUsername , userData , userRoom , joinRoom
           throw new Error(`Error! status: ${response.status}`);
         }
   
-        const result = await response.json();
+        const result = response.json();
   
         console.log('result is: ', JSON.stringify(result, null, 4));
   
@@ -73,10 +73,7 @@ function SubmitName({  register, handleUsername , userData , userRoom , joinRoom
                 </div>
               </div>
             </div>
-           
-          
           </>
-      
       </div>
     </>
   );
