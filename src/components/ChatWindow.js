@@ -8,7 +8,7 @@ import Stack from '@mui/material/Stack';
 
 
 
-function ChatWindow({ userlist, privateChats, handleMessage, sendPublicMessage, publicChats, tab, handleTab, sendPrivateMesage, msg }) {
+function ChatWindow({ userlist, privateChats, handleMessage, sendPublicMessage, publicChats, tab, handleTab, sendPrivateMesage, msg , userRoom }) {
   useEffect(() => {
 
   }, [privateChats]);
@@ -20,9 +20,8 @@ function ChatWindow({ userlist, privateChats, handleMessage, sendPublicMessage, 
   useEffect(() => {
     console.log("Tab : ", tab);
   }, [tab]);
-
-
-  console.log("Username in privateChat :  ", privateChats);
+  console.log("Userlist in chatWindow : ", userlist);
+  console.log("private chat in chatWindow : ", privateChats);
   return (
     <>
       <Box
@@ -32,15 +31,21 @@ function ChatWindow({ userlist, privateChats, handleMessage, sendPublicMessage, 
         p={5}
         sx={{ border: '2px solid grey', minHeight: '75vh', maxHeight: '100vh', width: '100vw' }}
       >
+        <h2>Room Code : {userRoom}</h2>
         <Grid container spacing={2}>
           <Grid item xs={4} sx={{}}>
             <Box sx={{ overflowX: "scroll",p: 2, border: '2px solid grey', minHeight: '75vh', maxHeight: '80vh', minWidth: '10vw' }}>
               {/* {[...userlist].map((val)=>{return(<button>{val}</button>) })} */}
               <Stack spacing={2} sx={{alignContent:'center' , flexWrap:'wrap'}}>
                 <Button variant="outlined" sx={{ width: '20vw', minWidth: '10vw' }} onClick={() => { handleTab("CHATROOM") }}>Chatroom</Button>
-                {[...privateChats.keys()].map((name, index) => (
+                {/* {[...privateChats.keys()].map((name, index) => (
                   <Button variant="outlined" key={index} sx={{ width: '20vw', minWidth: '10vw' }} onClick={() => { handleTab(name) }}>{name}</Button>
-                ))}
+                ))} */}
+                {
+                  userlist.map((name, index) => (
+                    <Button variant="outlined" key={index} sx={{ width: '20vw', minWidth: '10vw' }} onClick={() => { handleTab(name) }}>{name}</Button>
+                  ))
+                }
               </Stack>
             </Box>
 

@@ -28,21 +28,58 @@ function PageWrapper({ page, handleButtonClick }) {
         connected: false,
         message: "",
     });
+  
+
     useEffect(() => {
     }, [userData]);
+
     useEffect(() => {
+
     }, [tab]);
 
-    useEffect(() => {
-    }, [msg]);
-    useEffect(() => {
-    }, [userlist]);
+   
+
     useEffect(() => {
     }, [roomId]);
+
+
+
+    function updateChatName() {
+        console.log("################# IN Update chat method #################", userlist);
+        userlist.map((data , index) => ( privateChats.set(data, [])))
+        setPrivateChats([...privateChats])
+        
+    }
+
     useEffect(() => {
-    }, [createRoomFlag]);
+        console.log("In useEffect : with userRoom");
+        if (userRoom) {
+            const requestOptions = {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
 
+            };
+            const fetchData = () => {
+                return new Promise((resolve, reject) => {
+                    // Simulate a fetch request
+                    fetch(`http://localhost:8085/getRoomUsername/${userRoom}`, requestOptions)
+                        .then((response) => response.json())
+                        .then((data) => resolve(data))
+                        .catch((error) => reject(error))
+                })
+            }
 
+            // Use the Promise to fetch data
+            fetchData()
+                .then((result) => {
+                    setuserlist(result)
+                })
+                .catch((error) => {
+                    console.error('Error fetching data:', error)
+                })
+        }
+        console.log("Userlist in useEffect : ", userlist);
+    }, [userRoom ,privateChats ]);
 
 
     function handleUsername(event) {
@@ -50,12 +87,6 @@ function PageWrapper({ page, handleButtonClick }) {
         setUserData({ ...userData, username: value });
     }
 
-
-
-    function handleUserlist(user) {
-        userlist.push(user);
-        setuserlist([...userlist]);
-    }
 
     useEffect(() => {
         if (createRoomFlag === true) {
@@ -70,21 +101,22 @@ function PageWrapper({ page, handleButtonClick }) {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    "roomNumber" :`${userRoom}`,
-                    "creatorName" :`${userData.username}`
+                    "roomNumber": `${userRoom}`,
+                    "creatorName": `${userData.username}`
                 })
             };
             fetch('http://localhost:8085/addRoom', requestOptions)
-            .then(response => response.json())
-            
+                .then(function (response) {
+                    userlist.push(userData.username);
+                    setuserlist([...userlist]);
+                    return response.json()
+                })
+
         }
-
-    }, [userRoom]);
-
+    }, [userRoom , joinRoomFlag]);
 
     function register() {
         if (createRoomFlag === true) {
-            console.log("************** Create romm *************");
             let roomNumber = Math.floor(1000 + (Math.random() * 9000));
             roomId.set(userData.username, roomNumber);
             setroomId(new Map(roomId));
@@ -97,7 +129,6 @@ function PageWrapper({ page, handleButtonClick }) {
             stompclient = over(sock);
             stompclient.connect({}, onConnected, onError);
         }
-        console.log("************** Create romm ke baad*************", userRoom);
     }
 
     function onConnected() {
@@ -108,7 +139,7 @@ function PageWrapper({ page, handleButtonClick }) {
             onPrivateMessageReceived
         );
         userJoin();
-       
+        
     }
 
     const userJoin = () => {
@@ -117,7 +148,7 @@ function PageWrapper({ page, handleButtonClick }) {
             status: "JOIN"
         };
         stompclient.send(`/app/message/${userRoom}`, {}, JSON.stringify(chatMessage));
-        handleButtonClick(1);
+
     }
     function onPrivateMessageReceived(payload) {
 
@@ -131,6 +162,7 @@ function PageWrapper({ page, handleButtonClick }) {
             privateChats.set(payloadData.sendername, list);
             setPrivateChats(new Map(privateChats));
         }
+        
     }
     function onPulicMessageReceived(payload) {
 
@@ -140,11 +172,10 @@ function PageWrapper({ page, handleButtonClick }) {
                 if (!privateChats.get(payloadData.sendername)) {
                     privateChats.set(payloadData.sendername, []);
                     setPrivateChats(new Map(privateChats));
-
+                    console.log('******In JOin inside if*******');
                 }
-                handleUserlist(payloadData.sendername)
-                // console.log('payloadData received onPulicMessageReceived', payloadData);
-
+                console.log('******In JOin *******', payloadData);
+                handleButtonClick(1);
                 break;
             case "MESSAGE":
                 publicChats.push(payloadData);
@@ -167,6 +198,7 @@ function PageWrapper({ page, handleButtonClick }) {
 
         setUserData({ ...userData, "message": value });
     }
+
     const sendPublicMessage = () => {
         if (stompclient) {
             var chatMessage = {
@@ -221,7 +253,7 @@ function PageWrapper({ page, handleButtonClick }) {
         case 0:
             return (
                 <div>
-                    <SubmitName register={register} handleUsername={handleUsername} userData={userData} />
+                    <SubmitName register={register} handleUsername={handleUsername} userData={userData} userRoom={userRoom} joinRoomFlag={joinRoomFlag} updateChatName={updateChatName}/>
                 </div>
             )
         case 1:
@@ -232,7 +264,7 @@ function PageWrapper({ page, handleButtonClick }) {
                         handleMessage={handleMessage}
                         sendPublicMessage={sendPublicMessage}
                         publicChats={publicChats} tab={tab}
-                        handleTab={handleTab} sendPrivateMesage={sendPrivateMesage} msg={msg}></ChatWindow>
+                        handleTab={handleTab} sendPrivateMesage={sendPrivateMesage} msg={msg} userRoom={userRoom}></ChatWindow>
                 </>
             );
         case 2:

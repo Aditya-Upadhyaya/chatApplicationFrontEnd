@@ -1,10 +1,47 @@
-import React from "react";
 import "./style.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import React, { useState } from 'react';
 
 
-function SubmitName({  register, handleUsername , userData}) {
+function SubmitName({  register, handleUsername , userData , userRoom , joinRoomFlag, updateChatName}) {
 
+  const [data, setData] = useState({data: []});
+  const [err, setErr] = useState('');
+
+  const handleClick = async () => {
+    console.log("Flag value :" , joinRoomFlag);
+    if (joinRoomFlag===true) {
+      try {
+        const requestOptions = {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+              "roomNumber" :`${userRoom}`,
+              "creatorName" :`${userData.username}`
+          })
+      };
+        const response = await fetch('http://localhost:8085/joinRoom', requestOptions);
+  
+        if (!response.ok) {
+          throw new Error(`Error! status: ${response.status}`);
+        }
+  
+        const result = await response.json();
+  
+        console.log('result is: ', JSON.stringify(result, null, 4));
+  
+        setData(result);
+      } catch (err) {
+        setErr(err.message);
+      } finally {
+        updateChatName();
+        register();
+      }
+    } else {
+      register();
+    } 
+  };
+  
   return (
     <>
       <div className="text-center p-3">
@@ -29,7 +66,7 @@ function SubmitName({  register, handleUsername , userData}) {
                   <button
                     className="btn btn-outline-secondary"
                     type="button"
-                    onClick={register}
+                    onClick={handleClick}
                   >
                     Submit
                   </button>
