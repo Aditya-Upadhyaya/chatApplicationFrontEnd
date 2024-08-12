@@ -12,7 +12,6 @@ function App() {
     setPage(num);
   };
 
-
   return (
     <div id='pageWrapper' style={{
       // display: 'flex',

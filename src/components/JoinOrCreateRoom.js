@@ -23,6 +23,7 @@ function JoinOrCreateRoom({ createRoom, joinRoom }) {
     }
   }
 
+
   useEffect(() => {
     console.log("In effect ", data.code);
     if (data.code === '9999') {
@@ -36,7 +37,7 @@ function JoinOrCreateRoom({ createRoom, joinRoom }) {
     if (enteredRoomNumber.length === 4) {
       console.log("^^^^ In use effect ^^^^")
       try {
-        const data = await (await fetch(`http://localhost:8085/validateRoomNumber/${enteredRoomNumber}`)).json()
+        const data = await (await fetch(`${process.env.REACT_APP_BACKEND_URL}/validateRoomNumber/${enteredRoomNumber}`)).json()
         setData(data)
       } catch (err) {
         console.log(err.message)

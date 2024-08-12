@@ -20,7 +20,7 @@ function SubmitName({  register, handleUsername , userData , userRoom , joinRoom
               "creatorName" :`${userData.username}`
           })
       };
-        const response = await fetch('http://localhost:8085/joinRoom', requestOptions);
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/joinRoom`, requestOptions);
   
         if (!response.ok) {
           throw new Error(`Error! status: ${response.status}`);

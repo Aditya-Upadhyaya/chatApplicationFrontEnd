@@ -63,7 +63,7 @@ function PageWrapper({ page, handleButtonClick }) {
             const fetchData = () => {
                 return new Promise((resolve, reject) => {
                     // Simulate a fetch request
-                    fetch(`http://localhost:8085/getRoomUsername/${userRoom}`, requestOptions)
+                    fetch(`${process.env.REACT_APP_BACKEND_URL}/getRoomUsername/${userRoom}`, requestOptions)
                         .then((response) => response.json())
                         .then((data) => resolve(data))
                         .catch((error) => reject(error))
@@ -93,7 +93,7 @@ function PageWrapper({ page, handleButtonClick }) {
         if (createRoomFlag === true) {
             console.log("*******In UseEffect *********", userRoom);
             // Try to set up WebSocket connection with the handshake at "http://localhost:8085/ws"
-            let sock = new SockJS("http://localhost:8085/ws");
+            let sock = new SockJS(`${process.env.REACT_APP_BACKEND_URL}/ws`);
             // Create a new StompClient object with the WebSocket endpoint
             stompclient = over(sock);
             stompclient.connect({}, onConnected, onError);
@@ -106,7 +106,7 @@ function PageWrapper({ page, handleButtonClick }) {
                     "creatorName": `${userData.username}`
                 })
             };
-            fetch('http://localhost:8085/addRoom', requestOptions)
+            fetch(`${process.env.REACT_APP_BACKEND_URL}/addRoom`, requestOptions)
                 .then(function (response) {
                     userlist.push(userData.username);
                     setuserlist([...userlist]);
@@ -125,7 +125,7 @@ function PageWrapper({ page, handleButtonClick }) {
         }
         if (joinRoomFlag === true) {
             // Try to set up WebSocket connection with the handshake at "http://localhost:8085/ws"
-            let sock = new SockJS("http://localhost:8085/ws");
+            let sock = new SockJS(`${process.env.REACT_APP_BACKEND_URL}/ws`);
             // Create a new StompClient object with the WebSocket endpoint
             stompclient = over(sock);
             stompclient.connect({}, onConnected, onError);
@@ -149,10 +149,10 @@ function PageWrapper({ page, handleButtonClick }) {
             status: "JOIN"
         };
         stompclient.send(`/app/message/${userRoom}`, {}, JSON.stringify(chatMessage));
-
+        
     }
     function onPrivateMessageReceived(payload) {
-
+        
         var payloadData = JSON.parse(payload.body);
         if (privateChats.get(payloadData.sendername)) {
             privateChats.get(payloadData.sendername).push(payloadData);
