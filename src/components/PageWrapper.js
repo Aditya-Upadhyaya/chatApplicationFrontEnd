@@ -276,9 +276,9 @@ function PageWrapper({ page, handleButtonClick }) {
             );
         case 10:
             return (
-                <div>
+                <>
                     <JoinOrCreateRoom createRoom={createRoom} joinRoom={joinRoom}></JoinOrCreateRoom>
-                </div>
+                </>
             );
 
         default:

@@ -19,3 +19,9 @@ code {
    padding: auto;
 }
 
+.date{
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 1.125rem;
+  color: rgb(95, 99, 104);
+  
+}
