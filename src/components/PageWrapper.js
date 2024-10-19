@@ -6,7 +6,7 @@ import SockJS from "sockjs-client";
 import { over } from "stompjs";
 import ConnectionLostPage from './ConnectionLostPage';
 import JoinOrCreateRoom from './JoinOrCreateRoom';
-import ChatWindow1 from './ChatWindow1';
+import ChatWindow1 from './ChatWindow';
 import Header from './Header';
 
 
@@ -264,12 +264,12 @@ function PageWrapper({ page, handleButtonClick }) {
             return (
                 <>
                     <Header></Header>
-                    <ChatWindow1 userlist={userlist}
+                    <ChatWindow userlist={userlist}
                         privateChats={privateChats}
                         handleMessage={handleMessage}
                         sendPublicMessage={sendPublicMessage}
                         publicChats={publicChats} tab={tab}
-                        handleTab={handleTab} sendPrivateMesage={sendPrivateMesage} msg={msg} userRoom={userRoom}></ChatWindow1>
+                        handleTab={handleTab} sendPrivateMesage={sendPrivateMesage} msg={msg} userRoom={userRoom}></ChatWindow>
                 </>
             );
         case 2:
@@ -283,16 +283,6 @@ function PageWrapper({ page, handleButtonClick }) {
                 <>
                     <JoinOrCreateRoom createRoom={createRoom} joinRoom={joinRoom}></JoinOrCreateRoom>
                 </>
-            );
-
-        case 111:
-            return(
-                <ChatWindow1  userlist={userlist}
-                privateChats={privateChats}
-                handleMessage={handleMessage}
-                sendPublicMessage={sendPublicMessage}
-                publicChats={publicChats} tab={tab}
-                handleTab={handleTab} sendPrivateMesage={sendPrivateMesage} msg={msg} userRoom={userRoom}></ChatWindow1>
             );
 
         default:
