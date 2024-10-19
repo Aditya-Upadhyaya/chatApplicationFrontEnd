@@ -6,6 +6,8 @@ import SockJS from "sockjs-client";
 import { over } from "stompjs";
 import ConnectionLostPage from './ConnectionLostPage';
 import JoinOrCreateRoom from './JoinOrCreateRoom';
+import ChatWindow1 from './ChatWindow1';
+import Header from './Header';
 
 
 
@@ -180,6 +182,7 @@ function PageWrapper({ page, handleButtonClick }) {
                 break;
             case "MESSAGE":
                 publicChats.push(payloadData);
+                console.log("Public chat - ", publicChats);
                 setPublicChats([...publicChats]);
                 break;
             default:
@@ -260,12 +263,13 @@ function PageWrapper({ page, handleButtonClick }) {
         case 1:
             return (
                 <>
-                    <ChatWindow userlist={userlist}
+                    <Header></Header>
+                    <ChatWindow1 userlist={userlist}
                         privateChats={privateChats}
                         handleMessage={handleMessage}
                         sendPublicMessage={sendPublicMessage}
                         publicChats={publicChats} tab={tab}
-                        handleTab={handleTab} sendPrivateMesage={sendPrivateMesage} msg={msg} userRoom={userRoom}></ChatWindow>
+                        handleTab={handleTab} sendPrivateMesage={sendPrivateMesage} msg={msg} userRoom={userRoom}></ChatWindow1>
                 </>
             );
         case 2:
@@ -279,6 +283,16 @@ function PageWrapper({ page, handleButtonClick }) {
                 <>
                     <JoinOrCreateRoom createRoom={createRoom} joinRoom={joinRoom}></JoinOrCreateRoom>
                 </>
+            );
+
+        case 111:
+            return(
+                <ChatWindow1  userlist={userlist}
+                privateChats={privateChats}
+                handleMessage={handleMessage}
+                sendPublicMessage={sendPublicMessage}
+                publicChats={publicChats} tab={tab}
+                handleTab={handleTab} sendPrivateMesage={sendPrivateMesage} msg={msg} userRoom={userRoom}></ChatWindow1>
             );
 
         default:

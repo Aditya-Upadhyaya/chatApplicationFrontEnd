@@ -20,20 +20,17 @@ function SubmitName({  register, handleUsername , userData , userRoom , joinRoom
               "creatorName" :`${userData.username}`
           })
       };
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/joinRoom`, requestOptions);
+        const response = await (await fetch(`${process.env.REACT_APP_BACKEND_URL}/joinRoom`, requestOptions)).json()
+        
   
-        if (!response.ok) {
-          throw new Error(`Error! status: ${response.status}`);
-        }
+        console.log('result is: ', JSON.stringify(response, null, 4));
   
-        const result = response.json();
-  
-        console.log('result is: ', JSON.stringify(result, null, 4));
-  
-        setData(result);
+        setData(response);
       } catch (err) {
+        console.log('In catch');
         setErr(err.message);
       } finally {
+        console.log('In finaly');
         updateChatName();
         register();
       }

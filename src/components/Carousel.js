@@ -1,136 +1,60 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import './style.css';
+import { Grid } from '@mui/material';
 
-const Carousel = ({ images }) => {
+const Carousel = ({ images, size }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [direction, setDirection] = useState(null);
+  const [imageLeft , setimageLeft] = useState("./images/LeftArrow.png");
+  const [imageRight , setimageRight] = useState("./images/RightArrow.png");
 
-  const slideVariants = {
-    hiddenRight: {
-      x: "100%",
-      opacity: 0,
-    },
-    hiddenLeft: {
-      x: "-100%",
-      opacity: 0,
-    },
-    visible: {
-      x: "0",
-      opacity: 1,
-      transition: {
-        duration: 1,
-      },
-    },
-    exit: {
-      opacity: 0,
-      scale: 0.8,
-      transition: {
-        duration: 0.5,
-      },
-    },
-  };
-  const slidersVariants = {
-    hover: {
-      scale: 1.2,
-      backgroundColor: "#ff00008e",
-    },
-  };
-  const dotsVariants = {
-    initial: {
-      y: 0,
-    },
-    animate: {
-      y: -2,
-      scale: 1.2,
-      transition: { type: "spring", stiffness: 1000, damping: "10" },
-    },
-    hover: {
-      scale: 1.1,
-      transition: { duration: 0.2 },
-    },
-  };
+  function handleRightClick() {
+    var i = currentIndex + 1;
+    if (i >= size) {
+      i = 0;
+    }
+    setCurrentIndex(i);
+  }
 
-  const handleNext = () => {
-    setDirection("right");
-    setCurrentIndex((prevIndex) =>
-      prevIndex + 1 === images.length ? 0 : prevIndex + 1
-    );
-  };
+  function handleLeftClick() {
+    var i = currentIndex - 1;
+    if (i < 0) {
+      i = size - 1;
+    }
+    setCurrentIndex(i);
+  }
 
-  const handlePrevious = () => {
-    setDirection("left");
+  function moverHoverRight() {
+    setimageRight("./images/rightHover.png");
+  }
+  function moverOutRight() {
+    setimageRight("./images/RightArrow.png");
+  }
 
-    setCurrentIndex((prevIndex) =>
-      prevIndex - 1 < 0 ? images.length - 1 : prevIndex - 1
-    );
-  };
+  function moverHoverLeft() {
+    setimageLeft("./images/leftHover.png");
+  }
+  function moverOutLeft() {
+    setimageLeft("./images/LeftArrow.png");
+  }
+  
 
-  const handleDotClick = (index) => {
-    setDirection(index > currentIndex ? "right" : "left");
-    setCurrentIndex(index);
-  };
- 
+
   return (
-    <div className="carousel">
-        <div className="carousel-images">
-        <AnimatePresence>
-          <motion.img
-            key={currentIndex}
-            src={images[currentIndex]}
-            initial={direction === "right" ? "hiddenRight" : "hiddenLeft"}
-            animate="visible"
-            exit="exit"
-            variants={slideVariants}
-          />
-        </AnimatePresence>
-        <div className="slide_direction">
-          <motion.div
-            variants={slidersVariants}
-            whileHover="hover"
-            className="left"
-            onClick={handlePrevious}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              height="20"
-              viewBox="0 96 960 960"
-              width="20"
-            >
-              <path d="M400 976 0 576l400-400 56 57-343 343 343 343-56 57Z" />
-            </svg>
-          </motion.div>
-          <motion.div
-            variants={slidersVariants}
-            whileHover="hover"
-            className="right"
-            onClick={handleNext}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              height="20"
-              viewBox="0 96 960 960"
-              width="20"
-            >
-              <path d="m304 974-56-57 343-343-343-343 56-57 400 400-400 400Z" />
-            </svg>
-          </motion.div>
+    <Grid container spacing={1} display={'flex'} justifyContent={'center'} alignItems={'center'}>
+      <Grid item >
+        <img src={imageLeft} width="30" height="30" onClick={handleLeftClick} onMouseOver={moverHoverLeft} onMouseLeave={moverOutLeft}></img>
+      </Grid>
+      <Grid item >
+        <div>
+          <img src={images[currentIndex].src} alt="Connection Lost" width="250" height="250"></img>
         </div>
-      </div>
-      <div className="carousel-indicator">
-        {images.map((_, index) => (
-          <motion.div
-            key={index}
-            className={`dot ${currentIndex === index ? "active" : ""}`}
-            onClick={() => handleDotClick(index)}
-            initial="initial"
-            animate={currentIndex === index ? "animate" : ""}
-            whileHover="hover"
-            variants={dotsVariants}
-          ></motion.div>
-        ))}
-      </div>
-    </div>
+      </Grid>
+      <Grid item >
+        <img src={imageRight} width="30" height="30" onClick={handleRightClick} onMouseOver={moverHoverRight} onMouseLeave={moverOutRight}></img>
+      </Grid>
+    </Grid>
+
+
   );
 };
 export default Carousel;

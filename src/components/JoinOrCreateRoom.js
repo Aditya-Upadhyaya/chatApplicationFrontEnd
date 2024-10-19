@@ -14,7 +14,7 @@ function JoinOrCreateRoom({ createRoom, joinRoom }) {
   const [enteredRoomNumber, setenteredRoomNumber] = useState("");
   const [data, setData] = useState([]);
   const [hasError, sethasError] = useState(null);
-  const [hasLengthError, sethasLengthError] = useState(null);
+  const [hasLengthError, sethasLengthError] = useState(true);
   var [date, setDate] = useState(new Date());
 
 
@@ -69,10 +69,12 @@ function JoinOrCreateRoom({ createRoom, joinRoom }) {
   }
 
   const images = [
-    "https://www.gstatic.com/meet/user_edu_get_a_link_light_90698cd7b4ca04d3005c962a3756c42d.svg",
-    "https://www.gstatic.com/meet/user_edu_safety_light_e04a2bbb449524ef7e49ea36d5f25b65.svg",
-    "https://www.gstatic.com/meet/user_edu_scheduling_light_b352efa017e4f8f1ffda43e847820322.svg"
+    {src:"./images/image1.png"},
+    {src:"./images/image2.png"},
+    {src:"./images/image3.png"}
   ];
+  
+  var size = images.length;
 
   return (
 
@@ -127,7 +129,7 @@ function JoinOrCreateRoom({ createRoom, joinRoom }) {
         <Box sx={{
           padding: 2, textAlign: 'center',
         }}>
-          <Carousel images={images} />
+          <Carousel images={images} size={size}/>
         </Box>
       </Grid>
 
