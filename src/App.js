@@ -12,9 +12,10 @@ function App() {
     setPage(num);
   };
 
+  console.log("***Debug***In App page = ", page);
   return (
     
-      <PageWrapper page={page} handleButtonClick={handleButtonClick} id='pageWrapper' style={{
+      <PageWrapper page={page} handleButtonClick={handleButtonClick} setPage={setPage} id='pageWrapper' style={{
       // display: 'flex',
       // justifyContent: 'center',
       // alignItems: 'center',

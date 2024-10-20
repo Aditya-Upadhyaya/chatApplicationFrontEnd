@@ -6,14 +6,14 @@ import SockJS from "sockjs-client";
 import { over } from "stompjs";
 import ConnectionLostPage from './ConnectionLostPage';
 import JoinOrCreateRoom from './JoinOrCreateRoom';
-import ChatWindow1 from './ChatWindow';
 import Header from './Header';
+import saveUserName from '../services/DBService';
 
 
 
 var stompclient = null;
 
-function PageWrapper({ page, handleButtonClick }) {
+function PageWrapper({ page, handleButtonClick, setPage }) {
 
     const [roomId, setroomId] = useState(new Map());
     const [userRoom, setuserRoom] = useState();
@@ -24,13 +24,14 @@ function PageWrapper({ page, handleButtonClick }) {
     const [userlist, setuserlist] = useState([]);
     const [tab, setTab] = useState("CHATROOM");
     const [msg, setmsg] = useState("");
+    const [spinner, setSpinner] = useState(false);
     const [userData, setUserData] = useState({
         username: "",
         receivername: "",
         connected: false,
         message: "",
     });
-  
+
 
     useEffect(() => {
     }, [userData]);
@@ -39,19 +40,19 @@ function PageWrapper({ page, handleButtonClick }) {
 
     }, [tab]);
 
-   
+
 
     useEffect(() => {
     }, [roomId]);
 
 
     console.log("private chat in PageWrapper : ", privateChats);
-    
+
     function updateChatName() {
         console.log("################# IN Update chat method #################", userlist);
-        userlist.map((data , index) => ( privateChats.set(data, [])))
+        userlist.map((data, index) => (privateChats.set(data, [])))
         setPrivateChats([...privateChats])
-        
+
     }
 
     useEffect(() => {
@@ -82,7 +83,7 @@ function PageWrapper({ page, handleButtonClick }) {
                 })
         }
         console.log("Userlist in useEffect : ", userlist);
-    }, [userRoom ,privateChats ]);
+    }, [userRoom, privateChats]);
 
 
     function handleUsername(event) {
@@ -90,40 +91,43 @@ function PageWrapper({ page, handleButtonClick }) {
         setUserData({ ...userData, username: value });
     }
 
+    function updateSpinner() {
+        console.log("***Debug***In update spinner");
+        setSpinner(false)
+    }
 
+    //Adding db and stopclient in useeffct beacuse of state userRoom
     useEffect(() => {
         if (createRoomFlag === true) {
             console.log("*******In UseEffect *********", userRoom);
-            // Try to set up WebSocket connection with the handshake at "http://localhost:8085/ws"
-            let sock = new SockJS(`${process.env.REACT_APP_BACKEND_URL}/ws`);
-            // Create a new StompClient object with the WebSocket endpoint
-            stompclient = over(sock);
-            stompclient.connect({}, onConnected, onError);
+            console.log("%%%%Result=", spinner);
 
-            const requestOptions = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    "roomNumber": `${userRoom}`,
-                    "creatorName": `${userData.username}`
-                })
-            };
-            fetch(`${process.env.REACT_APP_BACKEND_URL}/addRoom`, requestOptions)
-                .then(function (response) {
-                    userlist.push(userData.username);
-                    setuserlist([...userlist]);
-                    return response.json()
-                })
+            if (!spinner) {
+                // Try to set up WebSocket connection with the handshake at "http://localhost:8085/ws"
+                let sock = new SockJS(`${process.env.REACT_APP_BACKEND_URL}/ws`);
+                // Create a new StompClient object with the WebSocket endpoint
+                stompclient = over(sock);
+                stompclient.connect({}, onConnected, onError);
+                console.log("***Debug***In Use effect after stomp client ");
+            }
 
         }
-    }, [userRoom , joinRoomFlag]);
+    }, [userRoom, joinRoomFlag, spinner]);
+
+    function createRoomNumber() {
+        let roomNumber = Math.floor(1000 + (Math.random() * 9000));
+        roomId.set(userData.username, roomNumber);
+        setroomId(new Map(roomId));
+        setuserRoom(roomNumber);
+        let usernameList = [];
+        usernameList.push(userData.username);
+        saveUserName(roomNumber, usernameList, updateSpinner);
+        console.log("***Debug***In Use effect after saving db "); 
+    }
 
     function register() {
         if (createRoomFlag === true) {
-            let roomNumber = Math.floor(1000 + (Math.random() * 9000));
-            roomId.set(userData.username, roomNumber);
-            setroomId(new Map(roomId));
-            setuserRoom(roomNumber);
+            createRoomNumber();
         }
         if (joinRoomFlag === true) {
             // Try to set up WebSocket connection with the handshake at "http://localhost:8085/ws"
@@ -141,8 +145,8 @@ function PageWrapper({ page, handleButtonClick }) {
             "/user/" + userData.username + "/private",
             onPrivateMessageReceived
         );
+        console.log("***Debug***In on connect ");
         userJoin();
-        
     }
 
     const userJoin = () => {
@@ -151,10 +155,11 @@ function PageWrapper({ page, handleButtonClick }) {
             status: "JOIN"
         };
         stompclient.send(`/app/message/${userRoom}`, {}, JSON.stringify(chatMessage));
-        
+        console.log("***Debug***In user join");
+
     }
     function onPrivateMessageReceived(payload) {
-        
+
         var payloadData = JSON.parse(payload.body);
         if (privateChats.get(payloadData.sendername)) {
             privateChats.get(payloadData.sendername).push(payloadData);
@@ -165,10 +170,10 @@ function PageWrapper({ page, handleButtonClick }) {
             privateChats.set(payloadData.sendername, list);
             setPrivateChats(new Map(privateChats));
         }
-        
+
     }
     function onPulicMessageReceived(payload) {
-
+        console.log("***Debug***In public msg received");
         var payloadData = JSON.parse(payload.body);
         switch (payloadData.status) {
             case "JOIN":
@@ -178,7 +183,8 @@ function PageWrapper({ page, handleButtonClick }) {
                     console.log('******In JOin inside if*******');
                 }
                 console.log('******In JOin *******', payloadData);
-                handleButtonClick(1);
+                console.log("***Debug***In public msg received case");
+                setPage(1);
                 break;
             case "MESSAGE":
                 publicChats.push(payloadData);
@@ -188,6 +194,7 @@ function PageWrapper({ page, handleButtonClick }) {
             default:
                 break;
         }
+        console.log("***Debug***In public msg received after switch case ");
     }
 
     function onError() {
@@ -257,7 +264,7 @@ function PageWrapper({ page, handleButtonClick }) {
         case 0:
             return (
                 <div>
-                    <SubmitName register={register} handleUsername={handleUsername} userData={userData} userRoom={userRoom} joinRoomFlag={joinRoomFlag} updateChatName={updateChatName}/>
+                    <SubmitName register={register} handleUsername={handleUsername} userData={userData} userRoom={userRoom} joinRoomFlag={joinRoomFlag} updateChatName={updateChatName} setSpinner={setSpinner} spinner={spinner} />
                 </div>
             )
         case 1:
