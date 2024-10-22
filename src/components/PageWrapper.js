@@ -288,7 +288,7 @@ function PageWrapper({ page, handleButtonClick, setPage }) {
         case 10:
             return (
                 <>
-                    <JoinOrCreateRoom createRoom={createRoom} joinRoom={joinRoom}></JoinOrCreateRoom>
+                    <JoinOrCreateRoom createRoom={createRoom} joinRoom={joinRoom}  setSpinner={setSpinner} spinner={spinner}></JoinOrCreateRoom>
                 </>
             );
 
