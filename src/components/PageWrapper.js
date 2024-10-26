@@ -33,18 +33,6 @@ function PageWrapper({ page, handleButtonClick, setPage }) {
     });
 
 
-    useEffect(() => {
-    }, [userData]);
-
-    useEffect(() => {
-
-    }, [tab]);
-
-
-
-    useEffect(() => {
-    }, [roomId]);
-
 
     console.log("private chat in PageWrapper : ", privateChats);
 
@@ -55,27 +43,22 @@ function PageWrapper({ page, handleButtonClick, setPage }) {
     }
 
     useEffect(() => {
-        console.log("In useEffect : with userRoom");
+        console.log("In useEffect : with userRoom to get User list");
         if (userRoom) {
-            const requestOptions = {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json' },
-
-            };
-            const fetchData = () => {
-                return new Promise((resolve, reject) => {
-                    // Simulate a fetch request
-                    fetch(`${process.env.REACT_APP_BACKEND_URL}/getRoomUsername/${userRoom}`, requestOptions)
-                        .then((response) => response.json())
-                        .then((data) => resolve(data))
-                        .catch((error) => reject(error))
-                })
-            }
+           
+            let fetchData = DBServiceObj.fetchDataWithID()
 
             // Use the Promise to fetch data
-            fetchData()
-                .then((result) => {
-                    setuserlist(result)
+            fetchData.then((result) => {
+                  
+                    
+                    result.map(function (data, index) {
+                        if (data.roomId == userRoom) {
+                          console.log("DB service result - ",data.username);
+                            setuserlist(data.username)
+                        }
+                      })
+                    
                 })
                 .catch((error) => {
                     console.error('Error fetching data:', error)
