@@ -7,8 +7,7 @@ import { over } from "stompjs";
 import ConnectionLostPage from './ConnectionLostPage';
 import JoinOrCreateRoom from './JoinOrCreateRoom';
 import Header from './Header';
-import saveUserName from '../services/DBService';
-
+import DBServiceObj from '../services/DBService';
 
 
 var stompclient = null;
@@ -24,7 +23,8 @@ function PageWrapper({ page, handleButtonClick, setPage }) {
     const [userlist, setuserlist] = useState([]);
     const [tab, setTab] = useState("CHATROOM");
     const [msg, setmsg] = useState("");
-    const [spinner, setSpinner] = useState(false);
+    let [userRoomArray, setuserRoomArray] = useState();
+    const [spinner, setSpinner] = useState();
     const [userData, setUserData] = useState({
         username: "",
         receivername: "",
@@ -52,7 +52,6 @@ function PageWrapper({ page, handleButtonClick, setPage }) {
         console.log("################# IN Update chat method #################", userlist);
         userlist.map((data, index) => (privateChats.set(data, [])))
         setPrivateChats([...privateChats])
-
     }
 
     useEffect(() => {
@@ -121,15 +120,16 @@ function PageWrapper({ page, handleButtonClick, setPage }) {
         setuserRoom(roomNumber);
         let usernameList = [];
         usernameList.push(userData.username);
-        saveUserName(roomNumber, usernameList, updateSpinner);
-        console.log("***Debug***In Use effect after saving db "); 
+        DBServiceObj.saveUserName(roomNumber, usernameList, updateSpinner);
+        console.log("***Debug***In Use effect after saving db ");
     }
 
     function register() {
         if (createRoomFlag === true) {
             createRoomNumber();
         }
-        if (joinRoomFlag === true) {
+        console.log("In Register method spinner = ",spinner);
+        if (joinRoomFlag === true && !spinner) {
             // Try to set up WebSocket connection with the handshake at "http://localhost:8085/ws"
             let sock = new SockJS(`${process.env.REACT_APP_BACKEND_URL}/ws`);
             // Create a new StompClient object with the WebSocket endpoint
@@ -182,7 +182,6 @@ function PageWrapper({ page, handleButtonClick, setPage }) {
                     setPrivateChats(new Map(privateChats));
                     console.log('******In JOin inside if*******');
                 }
-                console.log('******In JOin *******', payloadData);
                 console.log("***Debug***In public msg received case");
                 setPage(1);
                 break;
@@ -264,7 +263,7 @@ function PageWrapper({ page, handleButtonClick, setPage }) {
         case 0:
             return (
                 <div>
-                    <SubmitName register={register} handleUsername={handleUsername} userData={userData} userRoom={userRoom} joinRoomFlag={joinRoomFlag} updateChatName={updateChatName} setSpinner={setSpinner} spinner={spinner} />
+                    <SubmitName register={register} handleUsername={handleUsername} userData={userData} userRoom={userRoom} joinRoomFlag={joinRoomFlag} updateChatName={updateChatName} setSpinner={setSpinner} spinner={spinner} userRoomArray={userRoomArray}/>
                 </div>
             )
         case 1:
@@ -288,7 +287,7 @@ function PageWrapper({ page, handleButtonClick, setPage }) {
         case 10:
             return (
                 <>
-                    <JoinOrCreateRoom createRoom={createRoom} joinRoom={joinRoom}  setSpinner={setSpinner} spinner={spinner}></JoinOrCreateRoom>
+                    <JoinOrCreateRoom createRoom={createRoom} joinRoom={joinRoom} setSpinner={setSpinner} spinner={spinner} setuserRoomArray={setuserRoomArray}></JoinOrCreateRoom>
                 </>
             );
 

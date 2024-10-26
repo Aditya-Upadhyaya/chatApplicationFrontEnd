@@ -2,39 +2,30 @@ import "./style.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import React, { useState } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
+import DBServiceObj from '../services/DBService';
 
-function SubmitName({ register, handleUsername, userData, userRoom, joinRoomFlag, updateChatName, setSpinner,spinner }) {
+function SubmitName({ register, handleUsername, userData, userRoom, joinRoomFlag, updateChatName, setSpinner, spinner, userRoomArray }) {
 
-  const [data, setData] = useState({ data: [] });
-  const [err, setErr] = useState('');
+  const [err, setErr] = useState(false);
 
   const handleClick = async () => {
     console.log("Flag value :", joinRoomFlag);
     setSpinner(true);
     if (joinRoomFlag === true) {
-      try {
-        const requestOptions = {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            "roomNumber": `${userRoom}`,
-            "creatorName": `${userData.username}`
-          })
-        };
-        const response = await (await fetch(`${process.env.REACT_APP_BACKEND_URL}/joinRoom`, requestOptions)).json()
 
-
-        console.log('result is: ', JSON.stringify(response, null, 4));
-
-        setData(response);
-      } catch (err) {
-        console.log('In catch');
-        setErr(err.message);
-      } finally {
-        console.log('In finaly');
-        updateChatName();
-        register();
-      }
+      console.log("****In handleClick***", userRoomArray);
+      let datafromDB = DBServiceObj.saveJoinedUserInList(userRoomArray, userData.username);
+      datafromDB.then((val) => {
+        console.log("value from db servcie", val);
+        if (val) {
+          setSpinner(false);
+          register();
+        }
+      })
+      .catch(error => {
+        setErr(true);
+        console.error('Error during write:', error.message); // Handle errors
+      });
     } else {
       register();
     }
@@ -70,7 +61,8 @@ function SubmitName({ register, handleUsername, userData, userRoom, joinRoomFlag
                 </button>
               </div>
             </div>
-            {spinner && <div style={{display:'flex', flexDirection:'column', flex:'flexWrap', alignItems:'center'}}><CircularProgress size="20px" /><p>Please wait</p></div>}
+            {spinner && <div style={{ display: 'flex', flexDirection: 'column', flex: 'flexWrap', alignItems: 'center' }}><CircularProgress size="20px" /><p>Please wait</p></div>}
+            {err && <span style={{ color: 'red', marginLeft: '140px', marginTop: '10px' }}>Error in save user</span>}
           </div>
         </>
       </div>

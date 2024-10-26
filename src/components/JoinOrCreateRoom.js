@@ -12,15 +12,13 @@ import fetchData from '../services/DBService';
 import DBServiceObj from '../services/DBService';
 
 
-function JoinOrCreateRoom({ createRoom, joinRoom, setSpinner, spinner }) {
+function JoinOrCreateRoom({ createRoom, joinRoom, setSpinner, spinner, setuserRoomArray }) {
 
   const [enteredRoomNumber, setenteredRoomNumber] = useState("");
   const [data, setData] = useState([]);
   const [hasError, sethasError] = useState(null);
   const [hasLengthError, sethasLengthError] = useState(true);
   var [date, setDate] = useState(new Date());
-  let [userRoomArray, setuserRoomArray] = useState([]);
-  const [matchFlag, setmatchFlag] = useState(true);
 
   useEffect(() => {
     var timer = setInterval(() => setDate(new Date()), 60000)
@@ -52,41 +50,34 @@ function JoinOrCreateRoom({ createRoom, joinRoom, setSpinner, spinner }) {
 
 
 
-  useEffect(() => {
-    console.log("In ********* effect");
-
-    
-
-
-  }, [userRoomArray])
-
-
   const validateRoomList = async () => {
     if (enteredRoomNumber.length === 4) {
+      sethasError(false);
       setSpinner(true);
-      console.log("^^^^ In use effect ^^^^")
-      let datafromDB = DBServiceObj.fetchData();
+      console.log("^^^^ In validate room list ^^^^")
+      let datafromDB = DBServiceObj.fetchDataWithID();
       datafromDB.then((val) => {
         let matchFlag = false;
         val.map(function (data, index) {
-          console.log("In userRoomArray effect", data.roomId);
           if (data.roomId == enteredRoomNumber) {
             console.log("room number matched");
             matchFlag = true;
+            setuserRoomArray(data);
             sethasError(false)
             setSpinner(false)
           }
         })
-        setuserRoomArray(val);
-        if(!matchFlag){
+        if (!matchFlag) {
           setSpinner(false)
           sethasError(true)
         }
       }
       )
-      console.log("*******Debug*****Data", datafromDB);
+
+      // let datafromDB = DBServiceObj.fetchDataWithID();
+      // console.log("***Debug***",datafromDB);
+      // console.log("*******Debug*****Data", datafromDB);
     }
-    console.log("$$$$$ In use hook $$$$$$", data);
   }
 
   function validateRoom(enteredRoomNumber) {
@@ -146,9 +137,9 @@ function JoinOrCreateRoom({ createRoom, joinRoom, setSpinner, spinner }) {
               <Button variant="contained" sx={{ margin: '3px', padding: '10px' }} onClick={() => { validateRoom(enteredRoomNumber) }} disabled={hasError || hasLengthError || spinner} >
                 Join
               </Button>
-              {hasError && <h2>Error</h2>}
               {spinner && <div style={{ display: 'flex', flexDirection: 'column', flex: 'flexWrap', alignItems: 'center' }}><CircularProgress size="20px" /><p>Please wait</p></div>}
             </div>
+            {hasError && <span style={{ color: 'red', marginLeft: '140px', marginTop: '10px' }}>Please enter valid room number</span>}
           </div>
         </Box>
       </Grid>
