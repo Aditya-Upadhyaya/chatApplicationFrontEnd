@@ -63,8 +63,8 @@ function JoinOrCreateRoom({ createRoom, joinRoom, setSpinner, spinner, setuserRo
             console.log("room number matched");
             matchFlag = true;
             setuserRoomArray(data);
-            sethasError(false)
-            setSpinner(false)
+            sethasError(false);
+            setSpinner(false);
           }
         })
         if (!matchFlag) {

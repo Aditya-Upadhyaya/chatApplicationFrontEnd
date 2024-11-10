@@ -18,8 +18,8 @@ function SubmitName({ register, handleUsername, userData, userRoom, joinRoomFlag
       datafromDB.then((val) => {
         console.log("value from db servcie", val);
         if (val) {
-          setSpinner(false);
           register();
+          updateChatName();
         }
       })
       .catch(error => {
