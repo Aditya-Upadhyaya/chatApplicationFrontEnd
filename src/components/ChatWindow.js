@@ -191,7 +191,7 @@ const ChatWindow = ({ userlist, privateChats, handleMessage, sendPublicMessage, 
                                                     marginLeft: currentUser == message.sendername ? "100px":""
                                                 }}
                                             >
-                                                {message.sendername}
+                                            { currentUser == message.sendername ? "You" : message.sendername}
                                             </Typography>
                                             <Message sent={currentUser == message.sendername}>
                                                 <Typography variant="body1">{message.message}</Typography>

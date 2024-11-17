@@ -34,6 +34,7 @@ function PageWrapper({ page, handleButtonClick, setPage }) {
         receivername: "",
         connected: false,
         message: "",
+        userEmail:""
     });
 
 
@@ -72,6 +73,11 @@ function PageWrapper({ page, handleButtonClick, setPage }) {
         setUserData({ ...userData, username: value });
     }
 
+    function handleUserEmail(event) {
+        const { value } = event.target;
+        setUserData({ ...userData, userEmail: value });
+    }
+
     function updateSpinner() {
         console.log("***Debug***In update spinner");
         setSpinner(false)
@@ -91,7 +97,6 @@ function PageWrapper({ page, handleButtonClick, setPage }) {
                 stompclient.connect({}, onConnected, onError);
                 console.log("***Debug***In Use effect after stomp client ");
             }
-
         }
     }, [userRoom, joinRoomFlag, spinner]);
 
@@ -102,7 +107,7 @@ function PageWrapper({ page, handleButtonClick, setPage }) {
         setuserRoom(roomNumber);
         let usernameList = [];
         usernameList.push(userData.username);
-        DBServiceObj.saveUserName(roomNumber, usernameList, updateSpinner);
+        DBServiceObj.saveUserName(roomNumber, usernameList, updateSpinner,  userData.username, userData.userEmail);
         console.log("***Debug***In Use effect after saving db ");
     }
 
@@ -260,8 +265,9 @@ function PageWrapper({ page, handleButtonClick, setPage }) {
         case 0:
             return (
                 <div>
+                    <Header></Header>
                     <SubmitName register={register} handleUsername={handleUsername} userData={userData} userRoom={userRoom} joinRoomFlag={joinRoomFlag} 
-                    updateChatName={updateChatName} setSpinner={setSpinner} spinner={spinner} userRoomArray={userRoomArray}/>
+                    updateChatName={updateChatName} setSpinner={setSpinner} spinner={spinner} userRoomArray={userRoomArray} handleUserEmail={handleUserEmail}/>
                 </div>
             )
         case 1:
