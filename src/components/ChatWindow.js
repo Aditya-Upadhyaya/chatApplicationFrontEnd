@@ -121,7 +121,7 @@ const TypingIndicator = styled(Box)({
     marginLeft: "48px"
 });
 
-const ChatWindow = ({ userlist, privateChats, handleMessage, sendPublicMessage, publicChats, tab, handleTab, sendPrivateMesage, msg, userRoom, currentUser }) => {
+const ChatWindow = ({ userlist, privateChats, handleMessage, sendPublicMessage, publicChats, tab, handleTab, sendPrivateMesage, msg, userRoom, currentUser}) => {
     const classes = useStyles();
 
     console.log("--p---", privateChats);
@@ -129,10 +129,7 @@ const ChatWindow = ({ userlist, privateChats, handleMessage, sendPublicMessage, 
     console.log("--public---", publicChats);
 
     useEffect(() => {
-
-
         console.log("Tab : ", tab);
-
     }, [tab]);
 
     return (

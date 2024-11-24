@@ -29,14 +29,14 @@ function PageWrapper({ page, handleButtonClick, setPage }) {
     const [roomDetail, setroomDetail] = useState();
     const [spinner, setSpinner] = useState();
     const [currentUser, setcurrentUser] = useState();
+    const [alreadyUserFlag, setalreadyUserFlag] = useState(false);
     const [userData, setUserData] = useState({
         username: "",
         receivername: "",
         connected: false,
         message: "",
-        userEmail:""
+        userEmail: ""
     });
-
 
     function updateChatName() {
         console.log("################# IN Update chat method #################", userlist);
@@ -45,21 +45,20 @@ function PageWrapper({ page, handleButtonClick, setPage }) {
         setPrivateChats(updatedChats)
     }
 
-    
     useEffect(() => {
         console.log("In useEffect : with userRoom to get User list");
         if (userRoom) {
             let fetchData = DBServiceObj.fetchDataWithID()
             // Use the Promise to fetch data
             fetchData.then((result) => {
-                    result.map(function (data, index) {
-                        if (data.roomId == userRoom) {
-                          console.log("DB service result - ",data.username);
-                            setuserlist(data.username);
-                            setroomDetail(data);
-                        }
-                      })
+                result.map(function (data, index) {
+                    if (data.roomId == userRoom) {
+                        console.log("DB service result - ", data);
+                        setuserlist(data.username);
+                        setroomDetail(data);
+                    }
                 })
+            })
                 .catch((error) => {
                     console.error('Error fetching data:', error)
                 })
@@ -67,6 +66,23 @@ function PageWrapper({ page, handleButtonClick, setPage }) {
         console.log("Userlist in useEffect : ", userlist);
     }, [userRoom, privateChats]);
 
+    useEffect(() => {
+        console.log("====in useeffect==== - ", alreadyUserFlag);
+        if (alreadyUserFlag) {
+            let fetchData = DBServiceObj.getMessage(roomDetail)
+            // Use the Promise to fetch data
+            fetchData.then((result) => {
+                    console.log("====DB service msg result - ", result);
+                    result.map((val)=>{publicChats.push(val);
+                    })
+                    console.log("Public chat in user login again - ", publicChats);
+                    setPublicChats(publicChats);
+            })
+                .catch((error) => {
+                    console.error('Error fetching data:', error)
+                })
+        }
+    }, [alreadyUserFlag]);
 
     function handleUsername(event) {
         const { value } = event.target;
@@ -107,15 +123,17 @@ function PageWrapper({ page, handleButtonClick, setPage }) {
         setuserRoom(roomNumber);
         let usernameList = [];
         usernameList.push(userData.username);
-        DBServiceObj.saveUserName(roomNumber, usernameList, updateSpinner,  userData.username, userData.userEmail);
+        DBServiceObj.saveUserName(roomNumber, usernameList, updateSpinner, userData.username, userData.userEmail);
         console.log("***Debug***In Use effect after saving db ");
     }
 
     function register() {
+        //Add msg to create room with some msg field
+        // DBServiceObj.saveSendMessage(roomDetail, userData.username, "chatroom", "JOIN");
         if (createRoomFlag === true) {
             createRoomNumber();
         }
-        console.log("In Register method spinner = ",spinner);
+        console.log("In Register method spinner = ", spinner);
         if (joinRoomFlag === true && !spinner) {
             // Try to set up WebSocket connection with the handshake at "http://localhost:8085/ws"
             let sock = new SockJS(`${process.env.REACT_APP_BACKEND_URL}/ws`);
@@ -140,6 +158,8 @@ function PageWrapper({ page, handleButtonClick, setPage }) {
         };
         stompclient.send(`/app/message/${userRoom}`, {}, JSON.stringify(chatMessage));
         console.log("***Debug***In user join");
+        setSpinner(false);
+        setPage(1);
         
     }
 
@@ -156,7 +176,6 @@ function PageWrapper({ page, handleButtonClick, setPage }) {
             privateChats.set(payloadData.sendername, list);
             setPrivateChats(new Map(privateChats));
         }
-
     }
 
     function onPulicMessageReceived(payload) {
@@ -166,23 +185,20 @@ function PageWrapper({ page, handleButtonClick, setPage }) {
             case "JOIN":
                 if (!privateChats.get(payloadData.sendername)) {
                     privateChats.set(payloadData.sendername, []);
-
                     const updatedChats = new Map(privateChats);
                     console.log("Updated chat - ", updatedChats);
                     userlist.map((data, index) => (updatedChats.set(data, [])))
                     setPrivateChats(updatedChats)
-                    console.log('******In JOin inside if Updated*******' , updatedChats);
-                    console.log('******In JOin inside publicChats*******' , publicChats);
+                    console.log('******In JOin inside if Updated*******', updatedChats);
+                    console.log('******In JOin inside publicChats*******', publicChats);
                 }
                 console.log("***Debug***In public msg received case");
-                setSpinner(false);
-                setPage(1);
+                
                 break;
             case "MESSAGE":
                 publicChats.push(payloadData);
                 console.log("Public chat - ", publicChats);
                 setPublicChats([...publicChats]);
-
                 break;
             default:
                 break;
@@ -216,7 +232,7 @@ function PageWrapper({ page, handleButtonClick, setPage }) {
             setUserData({ ...userData, "message": "" });
             setmsg("");
             console.log("$$$$$In send msg - ", roomDetail);
-            DBServiceObj.saveSendMessage(roomDetail, userData.username,"chatroom",userData.message);
+            DBServiceObj.saveSendMessage(roomDetail, userData.username, "chatroom", userData.message);
         }
     }
 
@@ -238,7 +254,7 @@ function PageWrapper({ page, handleButtonClick, setPage }) {
             stompclient.send("/app/privateMessage", {}, JSON.stringify(chatMessage));
             setUserData({ ...userData, "message": "" });
             setmsg("");
-            DBServiceObj.saveSendMessage(roomDetail, userData.username,tab,userData.message);
+            DBServiceObj.saveSendMessage(roomDetail, userData.username, tab, userData.message);
             console.log("****In send private msg - ", privateChats);
         }
     }
@@ -266,8 +282,9 @@ function PageWrapper({ page, handleButtonClick, setPage }) {
             return (
                 <div>
                     <Header></Header>
-                    <SubmitName register={register} handleUsername={handleUsername} userData={userData} userRoom={userRoom} joinRoomFlag={joinRoomFlag} 
-                    updateChatName={updateChatName} setSpinner={setSpinner} spinner={spinner} userRoomArray={userRoomArray} handleUserEmail={handleUserEmail}/>
+                    <SubmitName register={register} handleUsername={handleUsername} userData={userData} userRoom={userRoom} joinRoomFlag={joinRoomFlag}
+                        updateChatName={updateChatName} setSpinner={setSpinner} spinner={spinner} userRoomArray={userRoomArray} handleUserEmail={handleUserEmail}
+                        setalreadyUserFlag={setalreadyUserFlag} />
                 </div>
             )
         case 1:
@@ -279,7 +296,8 @@ function PageWrapper({ page, handleButtonClick, setPage }) {
                         handleMessage={handleMessage}
                         sendPublicMessage={sendPublicMessage}
                         publicChats={publicChats} tab={tab}
-                        handleTab={handleTab} sendPrivateMesage={sendPrivateMesage} msg={msg} userRoom={userRoom} currentUser={currentUser}></ChatWindow>
+                        handleTab={handleTab} sendPrivateMesage={sendPrivateMesage} msg={msg}
+                        userRoom={userRoom} currentUser={currentUser}></ChatWindow>
                 </>
             );
         case 2:
@@ -291,8 +309,8 @@ function PageWrapper({ page, handleButtonClick, setPage }) {
         case 10:
             return (
                 <>
-                    <JoinOrCreateRoom createRoom={createRoom} joinRoom={joinRoom} setSpinner={setSpinner} spinner={spinner} 
-                    setuserRoomArray={setuserRoomArray}></JoinOrCreateRoom>
+                    <JoinOrCreateRoom createRoom={createRoom} joinRoom={joinRoom} setSpinner={setSpinner} spinner={spinner}
+                        setuserRoomArray={setuserRoomArray}></JoinOrCreateRoom>
                 </>
             );
 

@@ -4,7 +4,7 @@ import dateFormat, { masks } from "dateformat";
 
 
 async function saveUserName(roomId, username, updateSpinner, nameUser, emailUser) {
-
+ 
   const db = getDatabase(app);
   const newDocRef = push(ref(db, "userDetails/roomCode"));
   let message = {};
@@ -45,7 +45,6 @@ const fetchDataWithID = async () => {
   const dbRef = ref(db, "userDetails/roomCode");
   const snapshot = await get(dbRef);
   if (snapshot.exists()) {
-
     const myData = snapshot.val();
     const temporaryArray = Object.keys(myData).map(myFireId => {
       return {
@@ -86,9 +85,9 @@ const saveSendMessage = async (roomDetail, username, receiver, msg) => {
   let date = new Date();
   const newDocRef = ref(db, "userDetails/roomCode/" + roomDetail.fireBaseId + "/message");
   const newMessage = {
-    senderID: username,
-    receiverid: receiver,
-    text: msg,
+    sendername: username,
+    receivername: receiver,
+    message: msg,
     timestamp: dateFormat(date, "ddd, mmm dS, yyyy, h:MM TT")
   };
   try {
@@ -100,14 +99,14 @@ const saveSendMessage = async (roomDetail, username, receiver, msg) => {
 }
 
 const getMessage = async (roomDetail) => {
-  console.log("^^^^^^^In saveSendMessage^^^^", roomDetail);
+  console.log("^^^^^^^In getmsg^^^^", roomDetail);
   const db = getDatabase(app);
   const newDocRef = ref(db, "userDetails/roomCode/" + roomDetail.fireBaseId + "/message");
   const snapshot = await get(newDocRef);
   if (snapshot.exists()) {
     return Object.values(snapshot.val());
   } else {
-    alert("error in fetch data");
+    alert("error in fetch user's message details");
   }
 }
 
@@ -119,6 +118,5 @@ const DBServiceObj = {
   saveSendMessage: (roomDetail, username, receiver, msg) => saveSendMessage(roomDetail, username, receiver, msg),
   getMessage: (roomDetail) => getMessage(roomDetail)
 }
-
 
 export default DBServiceObj;
