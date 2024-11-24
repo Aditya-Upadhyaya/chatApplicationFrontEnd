@@ -53,11 +53,11 @@ function SubmitName({ register, handleUsername, userData, userRoom, joinRoomFlag
         if (!alreadyUser) {
           let datafromDB = DBServiceObj.saveJoinedUserInList(userRoomArray, userData.username, userData.userEmail);
           datafromDB.then((value) => {
-            console.log("value from db servcie", value);
-            if (value) {
-              register();
-              updateChatName();
-            }
+          console.log("value from db servcie", value);
+          if (value) {
+            register();
+            updateChatName(userData.username);
+          }
           })
             .catch(error => {
               setErr(true);
@@ -66,6 +66,7 @@ function SubmitName({ register, handleUsername, userData, userRoom, joinRoomFlag
         }
         else{
           register();
+          updateChatName(userData.username);
         }
       }
       else {

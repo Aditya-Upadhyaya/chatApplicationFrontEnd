@@ -38,10 +38,11 @@ function PageWrapper({ page, handleButtonClick, setPage }) {
         userEmail: ""
     });
 
-    function updateChatName() {
+    function updateChatName(name) {
         console.log("################# IN Update chat method #################", userlist);
         const updatedChats = new Map(privateChats);
-        userlist.map((data, index) => (updatedChats.set(data, [])))
+        userlist.map((data, index) => (updatedChats.set(data, [])));
+        updatedChats.set(name ,[]);
         setPrivateChats(updatedChats)
     }
 
@@ -56,6 +57,9 @@ function PageWrapper({ page, handleButtonClick, setPage }) {
                         console.log("DB service result - ", data);
                         setuserlist(data.username);
                         setroomDetail(data);
+                        // const updatedChats = new Map(privateChats);
+                        // updatedChats.set(data.username,[]);
+                        // setPrivateChats(updatedChats);
                     }
                 })
             })
@@ -72,11 +76,14 @@ function PageWrapper({ page, handleButtonClick, setPage }) {
             let fetchData = DBServiceObj.getMessage(roomDetail)
             // Use the Promise to fetch data
             fetchData.then((result) => {
-                    console.log("====DB service msg result - ", result);
-                    result.map((val)=>{publicChats.push(val);
-                    })
-                    console.log("Public chat in user login again - ", publicChats);
-                    setPublicChats(publicChats);
+                console.log("====DB service msg result - ", result);
+                result.map((val) => {
+                    if (val.receivername == 'chatroom') {
+                        publicChats.push(val);
+                    }
+                })
+                console.log("Public chat in user login again - ", publicChats);
+                setPublicChats(publicChats);
             })
                 .catch((error) => {
                     console.error('Error fetching data:', error)
@@ -160,7 +167,6 @@ function PageWrapper({ page, handleButtonClick, setPage }) {
         console.log("***Debug***In user join");
         setSpinner(false);
         setPage(1);
-        
     }
 
 
@@ -193,7 +199,7 @@ function PageWrapper({ page, handleButtonClick, setPage }) {
                     console.log('******In JOin inside publicChats*******', publicChats);
                 }
                 console.log("***Debug***In public msg received case");
-                
+
                 break;
             case "MESSAGE":
                 publicChats.push(payloadData);
